@@ -1,0 +1,6 @@
+{
+  "testField": {
+    "required": true,
+    "alias" : "testField"
+  }
+}
