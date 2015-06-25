@@ -2,9 +2,10 @@ var path = require('path');
 var validate = require('./validate.js');
 var common = require('zefti-common');
 var utils = require('zefti-utils')({});
-var rootDir = path.dirname(require.main.filename);
-var configPath = common.configPath || 'config';
-var config = require('zefti-config')();
+var config = require('zefti-config');
+var errorHandler = require('zefti-error-handler');
+var errors = require('./lib/errors.json').errorCodes;
+errorHandler.addErrors(errors);
 
 /*
 * Analytics
@@ -29,10 +30,13 @@ module.exports = function(options){
   } else {
     ruleSet = ruleSetOption;
   }
+  if (!ruleSet || utils.type(ruleSet) !== 'object') throw new Error('ruleSet is not formed well');
 
   if (Object.keys(ruleSet).length === 0) {
     throw new Error('ruletSet must have fields');
   }
+
+
 
   var requestHandler = function(req, res, cb){
     var payload = {};
@@ -51,22 +55,35 @@ module.exports = function(options){
 
 
     for (var field in ruleSet) {
-      if (req.hasOwnProperty(field)) {
-        if (!ruleSet[field].alias) return cb('Aliases are required.  Missing alias in ruleSet for field: ' + field);
+      if (req.body.hasOwnProperty(field)) {
+        if (!ruleSet[field].alias) return cb({errCode: '551667afa9a46d0387f95f08', payload:payload, fields:{field:field}});
         for (var rule in ruleSet[field].rules) {
-          var args = [req[field], ruleSet[field].rules[rule]];
-          if (rule === 'equivalence') args.push(req[ruleSet[field].rules[rule]]);
+          var args = [req.body[field], ruleSet[field].rules[rule]];
+          if (rule === 'equivalence') {
+            args.push(req.body[ruleSet[field].rules[rule]]);
+          }
           var result = validate[rule].apply(validate[rule], args);
           if (result !== 1) return cb(result);
         }
-        payload[ruleSet[field].alias] = req[field];
+        if (ruleSet[field].payloadStructure) {
+          var structure = ruleSet[field].payloadStructure.split('.');
+          var runningStructure = '';
+          structure.forEach(function(segment){
+            runningStructure = runningStructure + segment;
+            if (!payload[runningStructure]) payload[runningStructure] = {};
+          });
+          payload[ruleSet[field].payloadStructure][ruleSet[field].alias] = req.body[field];
+        } else {
+          payload[ruleSet[field].alias] = req.body[field];
+        }
 
-      } else if (!req.hasOwnProperty(field) && ruleSet[field].required) {
-        return cb('field: ' + field + ' is required', null);
+      } else if (!req.body.hasOwnProperty(field) && ruleSet[field].required) {
+        return cb({errCode: '551667b0a9a46d0387f95f09', payload:payload, fields:{field:field}});
       } else {
         //do nothing
       }
     }
+    payload.res = res;
     return cb(null, payload);
   };
   return requestHandler;

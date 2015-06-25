@@ -1,0 +1,63 @@
+{
+  "prefix" : "requestHandler",
+  "errorCodes" : {
+    "551667afa9a46d0387f95f08" : {
+      "eMsg" : "Aliases are required.  Missing alias in ruleSet",
+      "decription" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "551667b0a9a46d0387f95f09" : {
+      "eMsg" : "Field is required: <%= field %>",
+      "description" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "551667b1a9a46d0387f95f0a" : {
+      "eMsg" : "field does not meet minimum length requirement, arg: <%= arg %> with length: <%= length %>",
+      "description" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "551667b1a9a46d0387f95f0b" : {
+      "eMsg" : "field exceeds the maximum length requirement, arg: <%= arg %> with length: <%= length %>",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "551667b2a9a46d0387f95f0c" : {
+      "eMsg" : "type does not match, arg: <%= arg %> with enforced type: <%= type %>",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab10a9a46d0387f95f0d" : {
+      "eMsg" : "number type does not match, arg: <%= arg %> type: <%= type %>",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab11a9a46d0387f95f0e" : {
+      "eMsg" : "no equivalence, arg: <%= arg %> with fieldName: <%= fieldName %> for field: <%= field %>",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab11a9a46d0387f95f0f" : {
+      "eMsg" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab12a9a46d0387f95f10" : {
+      "eMsg" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab12a9a46d0387f95f11" : {
+      "eMsg" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    },
+    "5517ab13a9a46d0387f95f12" : {
+      "eMsg" : "",
+      "sev" : 2,
+      "module" : "requestHandler"
+    }
+  }
+}
