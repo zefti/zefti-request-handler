@@ -1,4 +1,4 @@
-var util = require('zefti-utils')();
+var util = require('zefti-utils');
 
 function minLength(arg, length) {
   if (arg.length < length) return {errCode: '551667b1a9a46d0387f95f0a', fields:{arg:arg, length:length}};

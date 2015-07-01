@@ -1,11 +1,9 @@
 var path = require('path');
 var validate = require('./validate.js');
 var common = require('zefti-common');
-var utils = require('zefti-utils')({});
+var utils = require('zefti-utils');
 var config = require('zefti-config');
-var errorHandler = require('zefti-error-handler');
-var errors = require('./lib/errors.json').errorCodes;
-errorHandler.addErrors(errors);
+var errors = require('./lib/errors.json');
 
 /*
 * Analytics
@@ -24,12 +22,14 @@ module.exports = function(options){
 
   if (options.versionKey) appVersionKey = options.versionKey;
   if (options.osVersionKey) osVersionKey = options.osVersionKey;
+  if (options.errorHandler) options.errorHandler.addErrors(errors);
 
   if (typeof ruleSetOption === 'string') {
     ruleSet = config.validation[ruleSetOption];
   } else {
     ruleSet = ruleSetOption;
   }
+
   if (!ruleSet || utils.type(ruleSet) !== 'object') throw new Error('ruleSet is not formed well');
 
   if (Object.keys(ruleSet).length === 0) {
@@ -52,7 +52,6 @@ module.exports = function(options){
     /*
      *  Field Validation
      */
-
 
     for (var field in ruleSet) {
       if (req.body.hasOwnProperty(field)) {
@@ -80,6 +79,7 @@ module.exports = function(options){
       } else if (!req.body.hasOwnProperty(field) && ruleSet[field].required) {
         return cb({errCode: '551667b0a9a46d0387f95f09', payload:payload, fields:{field:field}});
       } else {
+        console.log('im doing nothing, and thats because i was too lazy to code this part');
         //do nothing
       }
     }

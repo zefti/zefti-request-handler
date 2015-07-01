@@ -1,5 +1,6 @@
 var assert = require('assert');
 var requestHandler = require('../index.js');
+var utils = require('zefti-utils');
 
 /*
  * define test fields
@@ -16,9 +17,11 @@ var testArray6 = [1,2,3,4,5,6];
 var testArray = ['foo', 'bar', 'bing', 'bang'];
 
 var requiredJson = {
-  'testField': {
-    'required': true
-    , 'alias' : 'testField'
+  'ruleSet' : {
+    'testField': {
+      'required': true
+      , 'alias': 'testField'
+    }
   }
 };
 
@@ -27,9 +30,10 @@ var requiredJson = {
  */
 
 describe('structure', function(){
-  it('should return a function after passing in a rule set', function(){
-    var requestHandlerInstance = requestHandler({ruleSet:requiredJson});
+  it('should return a function after passing in a rule set', function(done){
+    var requestHandlerInstance = requestHandler(requiredJson);
     assert.equal(typeof requestHandlerInstance, 'function');
+    done();
   });
 });
 
@@ -44,7 +48,7 @@ describe('required', function(){
   var testValue = 'blah';
 
   it('should return payload as an object', function(done){
-    requestHandlerInstance({testField : testValue}, {}, function(err, payload){
+    requestHandlerInstance({body:{testField : testValue}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(typeof payload, 'object');
       done();
@@ -52,7 +56,7 @@ describe('required', function(){
   });
 
   it('should return ok because testField is required', function(done){
-    requestHandlerInstance({testField : testValue}, {}, function(err, payload){
+    requestHandlerInstance({body:{testField : testValue}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testValue);
       done();
@@ -65,20 +69,24 @@ describe('required', function(){
  */
 
 var minLength8Json = {
-  'testField': {
-    'rules' : {
-      'minLength': 8
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'minLength': 8
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var minLength4Json = {
-  'testField': {
-    'rules' : {
-      'minLength': 4
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'minLength': 4
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
@@ -87,7 +95,7 @@ describe('minimumLength', function(){
   var requestHandlerInstance8 = requestHandler(minLength8Json);
 
   it('should be ok when string over minimum length', function(done){
-    requestHandlerInstance4({testField:testString6}, {}, function(err, payload){
+    requestHandlerInstance4({body:{testField:testString6}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testString6);
       done();
@@ -95,15 +103,16 @@ describe('minimumLength', function(){
   });
 
   it('should err when string under minimum length', function(done){
-    requestHandlerInstance8({testField:testString6}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    requestHandlerInstance8({body:{testField:testString6}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should be ok when array over minimum length', function(done){
-    requestHandlerInstance4({testField:testArray6}, {}, function(err, payload){
+    requestHandlerInstance4({body:{testField:testArray6}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testArray6);
       done();
@@ -111,8 +120,9 @@ describe('minimumLength', function(){
   });
 
   it('should err when array under minimum length', function(done){
-    requestHandlerInstance8({testField:testArray6}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    requestHandlerInstance8({body:{testField:testArray6}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -126,20 +136,24 @@ describe('minimumLength', function(){
  */
 
 var maxLength8Json = {
-  'testField': {
-    'rules' : {
-      'maxLength': 8
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'maxLength': 8
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var maxLength4Json = {
-  'testField': {
-    'rules' : {
-      'maxLength': 4
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'maxLength': 4
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
@@ -148,7 +162,7 @@ describe('maximumLength', function(){
   var requestHandlerInstance8 = requestHandler(maxLength8Json);
 
   it('should be ok when string under max length', function(done){
-    requestHandlerInstance8({testField:testString6, abc:123}, {}, function(err, payload){
+    requestHandlerInstance8({body:{testField:testString6, abc:123}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testString6);
       done();
@@ -156,15 +170,16 @@ describe('maximumLength', function(){
   });
 
   it('should err when string over max length', function(done){
-    requestHandlerInstance4({testField:testString6}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    requestHandlerInstance4({body:{testField:testString6}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should be ok when array under max length', function(done){
-    requestHandlerInstance8({testField:testArray6, abc:123}, {}, function(err, payload){
+    requestHandlerInstance8({body:{testField:testArray6, abc:123}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testArray6);
       done();
@@ -172,8 +187,9 @@ describe('maximumLength', function(){
   });
 
   it('should err when array over max length', function(done){
-    requestHandlerInstance4({testField:testArray6}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    requestHandlerInstance4({body:{testField:testArray6}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -186,47 +202,57 @@ describe('maximumLength', function(){
  */
 
 var jsonTypeString = {
-  'testField': {
-    'rules' : {
-      'type': 'string'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'type': 'string'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var jsonTypeNumber = {
-  'testField': {
-    'rules' : {
-      'type': 'number'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'type': 'number'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var jsonTypeObject = {
-  'testField': {
-    'rules' : {
-      'type': 'object'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'type': 'object'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var jsonTypeArray = {
-  'testField': {
-    'rules' : {
-      'type': 'array'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'type': 'array'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var jsonTypeBoolean = {
-  'testField': {
-    'rules' : {
-      'type': 'boolean'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'type': 'boolean'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
@@ -246,7 +272,7 @@ describe('type - string', function(){
 
 
   it ('should be ok to pass a string into a field enforcing string', function(done){
-    stringHandler({testField:testString}, {}, function(err, payload){
+    stringHandler({body:{testField:testString}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testString);
       assert.equal(typeof payload.testField, 'string');
@@ -255,40 +281,45 @@ describe('type - string', function(){
   });
 
   it ('should fail to pass a number into a field enforcing string', function(done){
-    stringHandler({testField:testNumber}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    stringHandler({body:{testField:testNumber}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty object into a field enforcing string', function(done){
-    stringHandler({testField:testEmptyObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    stringHandler({body:{testField:testEmptyObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an object into a field enforcing string', function(done){
-    stringHandler({testField:testObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    stringHandler({body:{testField:testObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty array into a field enforcing string', function(done){
-    stringHandler({testField:testEmptyArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    stringHandler({body:{testField:testEmptyArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an array into a field enforcing string', function(done){
-    stringHandler({testField:testArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    stringHandler({body:{testField:testArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -304,7 +335,7 @@ describe('type - number', function(){
 
 
   it ('should be ok to pass a number into a field enforcing number', function(done){
-    numberHandler({testField:testNumber}, {}, function(err, payload){
+    numberHandler({body:{testField:testNumber}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testNumber);
       assert.equal(typeof payload.testField, 'number');
@@ -313,40 +344,45 @@ describe('type - number', function(){
   });
 
   it ('should fail to pass a string into a field enforcing number', function(done){
-    numberHandler({testField:testString}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    numberHandler({body:{testField:testString}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty object into a field enforcing number', function(done){
-    numberHandler({testField:testEmptyObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    numberHandler({body:{testField:testEmptyObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty into a field enforcing number', function(done){
-    numberHandler({testField:testObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    numberHandler({body:{testField:testObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty array into a field enforcing number', function(done){
-    numberHandler({testField:testEmptyArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    numberHandler({body:{testField:testEmptyArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an array into a field enforcing number', function(done){
-    numberHandler({testField:testArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    numberHandler({body:{testField:testArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -363,7 +399,7 @@ describe('type - object', function(){
 
 
   it ('should be ok to pass an object into a field enforcing object', function(done){
-    objectHandler({testField:testObject}, {}, function(err, payload){
+    objectHandler({body:{testField:testObject}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testObject);
       assert.equal(typeof payload.testField, 'object');
@@ -372,7 +408,8 @@ describe('type - object', function(){
   });
 
   it ('should be ok to pass an empty object into a field enforcing object', function(done){
-    objectHandler({testField:testEmptyObject}, {}, function(err, payload){
+    objectHandler({body:{testField:testEmptyObject}}, {}, function(err, payload){
+      if (err) throw new Error(err);
       assert.equal(payload.testField, testEmptyObject);
       assert.equal(typeof payload.testField, 'object');
       done();
@@ -380,32 +417,36 @@ describe('type - object', function(){
   });
 
   it ('should fail to pass a string into a field enforcing object', function(done){
-    objectHandler({testField:testString}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    objectHandler({body:{testField:testString}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass a number a field enforcing object', function(done){
-    objectHandler({testField:testNumber}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    objectHandler({body:{testField:testNumber}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty array into a field enforcing object', function(done){
-    objectHandler({testField:testEmptyArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    objectHandler({body:{testField:testEmptyArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an array into a field enforcing object', function(done){
-    objectHandler({testField:testArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    objectHandler({body:{testField:testArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -422,7 +463,7 @@ describe('type - array', function(){
 
 
   it ('should be ok to pass an array into a field enforcing array', function(done){
-    arrayHandler({testField:testArray}, {}, function(err, payload){
+    arrayHandler({body:{testField:testArray}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testArray);
       assert.equal(payload.testField instanceof Array, true);
@@ -431,7 +472,7 @@ describe('type - array', function(){
   });
 
   it ('should be ok to pass an empty array into a field enforcing array', function(done){
-    arrayHandler({testField:testEmptyArray}, {}, function(err, payload){
+    arrayHandler({body:{testField:testEmptyArray}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testEmptyArray);
       assert.equal(payload.testField instanceof Array, true);
@@ -440,32 +481,36 @@ describe('type - array', function(){
   });
 
   it ('should fail to pass a string into a field enforcing array', function(done){
-    arrayHandler({testField:testString}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    arrayHandler({body:{testField:testString}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass a number a field enforcing array', function(done){
-    arrayHandler({testField:testNumber}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    arrayHandler({body:{testField:testNumber}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an empty object into a field enforcing array', function(done){
-    arrayHandler({testField:testEmptyObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    arrayHandler({body:{testField:testEmptyObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it ('should fail to pass an object into a field enforcing array', function(done){
-    arrayHandler({testField:testObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    arrayHandler({body:{testField:testObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -477,20 +522,24 @@ describe('type - array', function(){
  */
 
 var jsonTypeInteger = {
-  'testField': {
-    'rules' : {
-      'numberType': 'integer'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'numberType': 'integer'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
 var jsonTypeFloat = {
-  'testField': {
-    'rules' : {
-      'numberType': 'float'
+  'ruleSet' : {
+    'testField': {
+      'rules': {
+        'numberType': 'float'
+      }
+      , 'alias': 'testField'
     }
-    , 'alias' : 'testField'
   }
 };
 
@@ -502,7 +551,7 @@ var floatHandler = requestHandler(jsonTypeFloat);
 describe('numberType - integer', function(){
 
   it('should be ok when passing an integer into a field enforcing integer', function(done){
-    integerHandler({testField:testInteger}, {}, function(err, payload){
+    integerHandler({body:{testField:testInteger}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testInteger);
       done();
@@ -510,48 +559,54 @@ describe('numberType - integer', function(){
   });
 
   it('should fail when passing a string into a field enforcing integer', function(done){
-    integerHandler({testField:testString}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:testString}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing a float into a field enforcing integer', function(done){
-    integerHandler({testField:testFloat}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:testFloat}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing an object into a field enforcing integer', function(done){
-    integerHandler({testField:testObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:testObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing an array into a field enforcing integer', function(done){
-    integerHandler({testField:testArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:testArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing a true boolean into a field enforcing integer', function(done){
-    integerHandler({testField:true}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:true}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing a false boolean into a field enforcing integer', function(done){
-    integerHandler({testField:false}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    integerHandler({body:{testField:false}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
@@ -562,7 +617,7 @@ describe('numberType - integer', function(){
 describe('numberType - float', function(){
 
   it('should be ok when passing a float into a field enforcing float', function(done){
-    floatHandler({testField:testFloat}, {}, function(err, payload){
+    floatHandler({body:{testField:testFloat}}, {}, function(err, payload){
       if (err) throw new Error(err);
       assert.equal(payload.testField, testFloat);
       done();
@@ -570,48 +625,54 @@ describe('numberType - float', function(){
   });
 
   it('should fail when passing a string into a field enforcing float', function(done){
-    floatHandler({testField:testString}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:testString}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing an integer into a field enforcing float', function(done){
-    floatHandler({testField:testInteger}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:testInteger}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing an object into a field enforcing float', function(done){
-    floatHandler({testField:testObject}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:testObject}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing an array into a field enforcing float', function(done){
-    floatHandler({testField:testArray}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:testArray}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing a true boolean into a field enforcing float', function(done){
-    floatHandler({testField:true}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:true}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
   });
 
   it('should fail when passing a false boolean into a field enforcing float', function(done){
-    floatHandler({testField:false}, {}, function(err, payload){
-      assert.equal(typeof err, 'string');
+    floatHandler({body:{testField:false}}, {}, function(err, payload){
+      assert(err);
+      if (utils.type(err) === 'object') assert(err.errCode);
       assert.equal(typeof payload, 'undefined');
       done();
     });
