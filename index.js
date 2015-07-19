@@ -4,6 +4,7 @@ var common = require('zefti-common');
 var utils = require('zefti-utils');
 var config = require('zefti-config');
 var errors = require('./lib/errors.json');
+var _ = require('underscore');
 
 /*
 * Analytics
@@ -33,12 +34,14 @@ module.exports = function(options){
   if (!ruleSet || utils.type(ruleSet) !== 'object') throw new Error('ruleSet is not formed well');
 
   if (Object.keys(ruleSet).length === 0) {
-    throw new Error('ruletSet must have fields');
+    throw new Error('ruleSet must have fields');
   }
 
 
 
   var requestHandler = function(req, res, cb){
+    var data = {};
+    _.extend(data, req.body, req.params, req.headers);
     var payload = {};
 
     /*
@@ -54,12 +57,12 @@ module.exports = function(options){
      */
 
     for (var field in ruleSet) {
-      if (req.body.hasOwnProperty(field)) {
+      if (data.hasOwnProperty(field)) {
         if (!ruleSet[field].alias) return cb({errCode: '551667afa9a46d0387f95f08', payload:payload, fields:{field:field}});
         for (var rule in ruleSet[field].rules) {
-          var args = [req.body[field], ruleSet[field].rules[rule]];
+          var args = [data[field], ruleSet[field].rules[rule]];
           if (rule === 'equivalence') {
-            args.push(req.body[ruleSet[field].rules[rule]]);
+            args.push(data[ruleSet[field].rules[rule]]);
           }
           var result = validate[rule].apply(validate[rule], args);
           if (result !== 1) return cb(result);
@@ -71,12 +74,12 @@ module.exports = function(options){
             runningStructure = runningStructure + segment;
             if (!payload[runningStructure]) payload[runningStructure] = {};
           });
-          payload[ruleSet[field].payloadStructure][ruleSet[field].alias] = req.body[field];
+          payload[ruleSet[field].payloadStructure][ruleSet[field].alias] = data[field];
         } else {
-          payload[ruleSet[field].alias] = req.body[field];
+          payload[ruleSet[field].alias] = data[field];
         }
 
-      } else if (!req.body.hasOwnProperty(field) && ruleSet[field].required) {
+      } else if (!data.hasOwnProperty(field) && ruleSet[field].required) {
         return cb({errCode: '551667b0a9a46d0387f95f09', payload:payload, fields:{field:field}});
       } else {
         console.log('im doing nothing, and thats because i was too lazy to code this part');
