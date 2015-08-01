@@ -41,7 +41,7 @@ module.exports = function(options){
 
   var requestHandler = function(req, res, cb){
     var data = {};
-    _.extend(data, req.body, req.params, req.headers);
+    _.extend(data, req.body, req.params, req.query, req.headers);
     var payload = {};
 
     /*
