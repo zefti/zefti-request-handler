@@ -87,6 +87,7 @@ module.exports = function(options){
       }
     }
     payload.res = res;
+
     return cb(null, payload);
   };
   return requestHandler;
