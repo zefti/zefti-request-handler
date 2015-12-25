@@ -55,7 +55,6 @@ module.exports = function(options){
     /*
      *  Field Validation
      */
-
     for (var field in ruleSet) {
       if (data.hasOwnProperty(field)) {
         if (!ruleSet[field].alias) return cb({errCode: '551667afa9a46d0387f95f08', payload:payload, fields:{field:field}});
@@ -87,7 +86,6 @@ module.exports = function(options){
       }
     }
     payload.res = res;
-
     return cb(null, payload);
   };
   return requestHandler;
