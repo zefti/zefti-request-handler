@@ -2,7 +2,6 @@ var path = require('path');
 var validate = require('./validate.js');
 var common = require('zefti-common');
 var utils = require('zefti-utils');
-var config = require('zefti-config');
 var errors = require('./lib/errors.json');
 var _ = require('underscore');
 
@@ -18,7 +17,7 @@ module.exports = function(options){
   var ruleSet = null;
   var appVersionKey = null;
   var osVersionKey = null;
-
+  var validationConfig = options.validation;
   var ruleSetOption = options.ruleSet;
 
   if (options.versionKey) appVersionKey = options.versionKey;
@@ -26,7 +25,7 @@ module.exports = function(options){
   if (options.errorHandler) options.errorHandler.addErrors(errors);
 
   if (typeof ruleSetOption === 'string') {
-    ruleSet = config.validation[ruleSetOption];
+    ruleSet = validationConfig[ruleSetOption];
   } else {
     ruleSet = ruleSetOption;
   }
