@@ -14,18 +14,18 @@
       "module" : "requestHandler"
     },
     "551667b1a9a46d0387f95f0a" : {
-      "eMsg" : "field does not meet minimum length requirement, arg: <%= arg %> with length: <%= length %>",
+      "eMsg" : "request validation for field: <%= fieldName %> does not meet minimum length requirement, arg: <%= arg %> with length: <%= length %>",
       "description" : "",
       "sev" : "s3",
       "module" : "requestHandler"
     },
     "551667b1a9a46d0387f95f0b" : {
-      "eMsg" : "field exceeds the maximum length requirement, arg: <%= arg %> with length: <%= length %>",
+      "eMsg" : "request validation for field: <%=fieldName => exceeds the maximum length requirement, arg: <%= arg %> with length: <%= length %>",
       "sev" : "s3",
       "module" : "requestHandler"
     },
     "551667b2a9a46d0387f95f0c" : {
-      "eMsg" : "type does not match, arg: <%= arg %> with enforced type: <%= type %>",
+      "eMsg" : "request validation for field: <%= fieldName %> does not match, arg: <%= arg %> with enforced type: <%= type %>",
       "sev" : "s3",
       "module" : "requestHandler"
     },

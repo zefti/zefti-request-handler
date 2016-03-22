@@ -1,6 +1,5 @@
 var path = require('path');
 var validate = require('./validate.js');
-var common = require('zefti-common');
 var utils = require('zefti-utils');
 var errors = require('./lib/errors.json');
 var _ = require('underscore');
@@ -39,6 +38,7 @@ module.exports = function(options){
 
 
   var requestHandler = function(req, res, cb){
+
     var data = {};
     _.extend(data, req.body, req.params, req.query, req.headers);
     var payload = {};
@@ -62,8 +62,11 @@ module.exports = function(options){
           if (rule === 'equivalence') {
             args.push(data[ruleSet[field].rules[rule]]);
           }
+          args.push(field);
           var result = validate[rule].apply(validate[rule], args);
-          if (result !== 1) return cb(result);
+          if (result !== 1) {
+            return cb(result);
+          }
         }
         if (ruleSet[field].payloadStructure) {
           var structure = ruleSet[field].payloadStructure.split('.');
@@ -80,8 +83,7 @@ module.exports = function(options){
       } else if (!data.hasOwnProperty(field) && ruleSet[field].required) {
         return cb({errCode: '551667b0a9a46d0387f95f09', payload:payload, fields:{field:field}});
       } else {
-        console.log('im doing nothing, and thats because i was too lazy to code this part');
-        //do nothing
+        //do nothing - field not provided
       }
     }
     payload.res = res;

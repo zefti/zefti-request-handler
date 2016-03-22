@@ -1,22 +1,22 @@
 var util = require('zefti-utils');
 
-function minLength(arg, length) {
-  if (arg.length < length) return {errCode: '551667b1a9a46d0387f95f0a', fields:{arg:arg, length:length}};
+function minLength(arg, length, fieldName) {
+  if (arg.length < length) return {errCode: '551667b1a9a46d0387f95f0a', fields:{arg:arg, length:length, fieldName: fieldName}};
   return 1;
 }
 
-function maxLength(arg, length) {
-  if (arg.length > length) return {errCode: '551667b1a9a46d0387f95f0b', fields:{arg:arg, length:length}};
+function maxLength(arg, length, fieldName) {
+  if (arg.length > length) return {errCode: '551667b1a9a46d0387f95f0b', fields:{arg:arg, length:length, fieldName: fieldName}};
   return 1;
 }
 
-function type(arg, type) {
-  if (util.type(arg) !== type) return {errCode: '551667b2a9a46d0387f95f0c', fields:{arg:arg, type:type}};
+function type(arg, type, fieldName) {
+  if (util.type(arg) !== type) return {errCode: '551667b2a9a46d0387f95f0c', fields:{arg:arg, type:type, fieldName: fieldName}};
   return 1;
 }
 
-function numberType(arg, type) {
-  if(util.numberType(arg) !== type) return {errCode: '5517ab10a9a46d0387f95f0d', fields:{arg:arg, type:type}};
+function numberType(arg, type, fieldName) {
+  if(util.numberType(arg) !== type) return {errCode: '5517ab10a9a46d0387f95f0d', fields:{arg:arg, type:type, fieldName: fieldName}};
   return 1;
 }
 
