@@ -32,7 +32,7 @@ module.exports = function(options){
   if (!ruleSet || utils.type(ruleSet) !== 'object') throw new Error('ruleSet is not formed well');
 
   if (Object.keys(ruleSet).length === 0) {
-    throw new Error('ruleSet must have fields');
+    throw new Error('ruleSet: ' + ruleSetOption + ' must have fields');
   }
 
 
